@@ -25,11 +25,11 @@ export interface GroupedDataEntry {
 }
 
 export const categoryUnitMap = {
-    consumption: 'mpg',
+    consumption: 'l',
     cylinder: '',
     displacement: 'ccm',
     horsepower: 'hp',
-    weight: 'lbs',
+    weight: 'kg',
     acceleration: 's',
 };
 

@@ -1,6 +1,12 @@
 import * as d3 from 'd3';
 import { css, customElement, html, LitElement } from 'lit-element';
-import { CarData, ChartData, dataSnippet, fullData, GroupedDataEntry } from '../../data';
+import {
+    CarData,
+    ChartData,
+    dataSnippet,
+    fullData,
+    GroupedDataEntry,
+} from '../../data';
 import { scalerFactory } from '../../util/d3util';
 
 @customElement('car-chart')
@@ -134,7 +140,7 @@ class CarChart extends LitElement {
         carDataTmp.push(carToAdd);
         this.carData = carDataTmp;
         this.buildChartData();
-        this.requestUpdate()
+        this.requestUpdate();
     };
 
     removeCar = (id: string) => {
@@ -154,7 +160,15 @@ class CarChart extends LitElement {
             >
             </chart-view>
             <data-selector
-                .carData=${this.carData}
+                .selectedCars=${this.carData}
+                .carsToSelect=${fullData.filter(
+                    (car) =>
+                        car.acceleration &&
+                        car.consumption &&
+                        car.displacement &&
+                        car.horsepower &&
+                        car.weight
+                )}
                 .color=${this.color}
                 .addCar=${this.addCar}
                 .removeCar=${this.removeCar}

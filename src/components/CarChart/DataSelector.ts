@@ -1,13 +1,15 @@
 import * as d3 from 'd3';
 import { css, customElement, html, LitElement, property } from 'lit-element';
-import { CarData, fullData } from '../../data';
+import { CarData } from '../../data';
 import { capitalize } from '../../util/stringUtil';
-
 
 @customElement('data-selector')
 class DataSelector extends LitElement {
     @property({ attribute: false })
-    carData: CarData[];
+    carsToSelect: CarData[];
+
+    @property({ attribute: false })
+    selectedCars: CarData[];
 
     @property({ attribute: false })
     color: (id: string) => string;
@@ -18,6 +20,7 @@ class DataSelector extends LitElement {
     @property({ attribute: false })
     removeCar: (id: string) => void;
 
+    @property({ attribute: false })
     searchValue = '';
 
     static get styles() {
@@ -29,6 +32,7 @@ class DataSelector extends LitElement {
                 flex-direction: column;
                 justify-content: space-between;
                 background-color: rgb(248, 248, 248);
+                width: 15rem;
             }
 
             .cars-to-select-outer-container {
@@ -78,6 +82,13 @@ class DataSelector extends LitElement {
                 border: 0px solid;
                 border-radius: 0.2rem;
             }
+
+            input[type='search']::-webkit-search-decoration,
+            input[type='search']::-webkit-search-cancel-button,
+            input[type='search']::-webkit-search-results-button,
+            input[type='search']::-webkit-search-results-decoration {
+                display: none;
+            }
         `;
     }
 
@@ -91,8 +102,6 @@ class DataSelector extends LitElement {
     }
 
     updated() {
-        console.log('rerendering cars to select...');
-
         d3.select(this.shadowRoot.querySelector('.select-data-container'))
             .select('.selected-cars-container')
             .remove();
@@ -105,7 +114,7 @@ class DataSelector extends LitElement {
     }
 
     createSelectedCars() {
-        const carData = this.carData;
+        const carData = this.selectedCars;
         const color = this.color;
         const selectedCarsContainer = d3
             .select(
@@ -131,7 +140,6 @@ class DataSelector extends LitElement {
     }
 
     createCarsToSelect() {
-        const carData = this.carData;
         const carsToSelectContainer = d3
             .select(
                 this.shadowRoot.querySelector('.cars-to-select-outer-container')
@@ -141,7 +149,7 @@ class DataSelector extends LitElement {
 
         carsToSelectContainer
             .selectAll()
-            .data(this.filterCars(fullData))
+            .data(this.filterCars(this.carsToSelect))
             .enter()
             .append('car-list-item')
             .attr('name', (d: CarData) => capitalize(`${d.brand} ${d.model}`))
@@ -151,34 +159,31 @@ class DataSelector extends LitElement {
     }
 
     filterCars(data: CarData[]) {
-        console.log(this.searchValue);
-
-        const carData = this.carData;
+        const selectedCars = this.selectedCars;
         return data.filter((car) => {
             if (
-                -1 ===
-                carData.findIndex((selectedCar) => selectedCar.id === car.id)
+                -1 !==
+                selectedCars.findIndex(
+                    (selectedCar) => selectedCar.id === car.id
+                )
             ) {
-                return true;
+                return false;
             }
             if (
                 this.searchValue !== '' &&
-                `${car.brand} ${car.model}`.includes(
+                !`${car.brand} ${car.model}`.includes(
                     this.searchValue.toLowerCase()
                 )
             ) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         });
     }
 
     updateSearchValue(event: KeyboardEvent) {
         this.searchValue = (<HTMLInputElement>event.target).value;
     }
-
-    // @keydown=${<(ev: KeyboardEvent) => void>this.updateSearchValue}
-
 
     render() {
         return html` <div class="select-data-container">
@@ -188,6 +193,7 @@ class DataSelector extends LitElement {
                 type="search"
                 placeholder="Seach cars"
                 class="search"
+                @keyup=${<(ev: KeyboardEvent) => void>this.updateSearchValue}
             />
             <div class="cars-to-select-outer-container"></div>
         </div>`;
