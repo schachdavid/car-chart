@@ -27,6 +27,18 @@ class CarChart extends LitElement {
                 box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
                 overflow: hidden;
             }
+
+            .outer-container {
+                height: 100vh;
+                width: 100vw;
+                font-size: 100%;
+                font-family: 'Open Sans', sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: rgb(105, 105, 105);
+                background-color: rgb(248, 248, 248);
+            }
         `;
     }
 
@@ -151,29 +163,31 @@ class CarChart extends LitElement {
     };
 
     render() {
-        return html` <div class="container">
-            <chart-view
-                .carData=${this.carData}
-                .chartData=${this.chartData}
-                .groupedData=${this.groupedData}
-                .color=${this.color}
-            >
-            </chart-view>
-            <data-selector
-                .selectedCars=${this.carData}
-                .carsToSelect=${fullData.filter(
-                    (car) =>
-                        car.acceleration &&
-                        car.consumption &&
-                        car.displacement &&
-                        car.horsepower &&
-                        car.weight
-                )}
-                .color=${this.color}
-                .addCar=${this.addCar}
-                .removeCar=${this.removeCar}
-            >
-            </data-selector>
+        return html` <div class="outer-container">
+            <div class="container">
+                <chart-view
+                    .carData=${this.carData}
+                    .chartData=${this.chartData}
+                    .groupedData=${this.groupedData}
+                    .color=${this.color}
+                >
+                </chart-view>
+                <data-selector
+                    .selectedCars=${this.carData}
+                    .carsToSelect=${fullData.filter(
+                        (car) =>
+                            car.acceleration &&
+                            car.consumption &&
+                            car.displacement &&
+                            car.horsepower &&
+                            car.weight
+                    )}
+                    .color=${this.color}
+                    .addCar=${this.addCar}
+                    .removeCar=${this.removeCar}
+                >
+                </data-selector>
+            </div>
         </div>`;
     }
 }
